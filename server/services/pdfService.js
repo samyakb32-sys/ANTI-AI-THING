@@ -1,26 +1,23 @@
-import { PDFParse } from 'pdf-parse'
+// pdf-parse@1.x on purpose: it's a single plain CommonJS entry point with
+// no conditional "exports" map, so a bundler can't resolve it to a
+// browser build that drags in pdfjs-dist's canvas/DOMMatrix code and
+// crashes at import time in a serverless Node runtime (v2 hit exactly
+// that on Vercel). Loaded via createRequire rather than a plain ESM
+// `import`: pdf-parse's index.js checks `!module.parent` to decide
+// whether it's being run standalone, and Node's CJS-interop for ESM
+// `import` leaves that unset, so a bare `import` makes it try to read
+// its own test fixture off disk and crash. require() sets module.parent
+// correctly and skips that branch entirely.
+import { createRequire } from 'node:module'
 import PDFDocument from 'pdfkit'
 
+const pdfParse = createRequire(import.meta.url)('pdf-parse')
+
 export async function extractPdf(buffer) {
-  let parser
+  let data
   try {
-    parser = new PDFParse({ data: buffer })
-    const data = await parser.getText()
-    if (!data.text.trim()) {
-      const err = new Error('Empty PDF')
-      err.apiError = {
-        code: 'EMPTY_INPUT',
-        title: 'No readable text found',
-        message:
-          'This PDF has no extractable text — it may be a scanned image. Scanned PDFs require OCR, which is planned for a future release.',
-        retryable: false,
-      }
-      err.status = 400
-      throw err
-    }
-    return data.text
-  } catch (e) {
-    if (e.apiError) throw e
+    data = await pdfParse(buffer)
+  } catch {
     const err = new Error('PDF extraction failed')
     err.apiError = {
       code: 'EXTRACTION_FAILED',
@@ -30,9 +27,21 @@ export async function extractPdf(buffer) {
     }
     err.status = 422
     throw err
-  } finally {
-    await parser?.destroy()
   }
+
+  if (!data.text.trim()) {
+    const err = new Error('Empty PDF')
+    err.apiError = {
+      code: 'EMPTY_INPUT',
+      title: 'No readable text found',
+      message:
+        'This PDF has no extractable text — it may be a scanned image. Scanned PDFs require OCR, which is planned for a future release.',
+      retryable: false,
+    }
+    err.status = 400
+    throw err
+  }
+  return data.text
 }
 
 export function generatePdf(text) {
