@@ -1,5 +1,13 @@
 import AdmZip from 'adm-zip'
-import PptxGenJS from 'pptxgenjs'
+// Loaded via createRequire: pptxgenjs's exports map splits "import"/
+// "require" targets, and Vercel's Node function bundler resolved the
+// "import" (ESM) target for a package that then got executed through a
+// CJS require() call at runtime — "Cannot use import statement outside
+// a module" (confirmed via Vercel runtime logs on the #4 production
+// deploy). createRequire forces the "require" condition deterministically.
+import { createRequire } from 'node:module'
+
+const PptxGenJS = createRequire(import.meta.url)('pptxgenjs')
 
 function stripXmlTags(xml) {
   const matches = [...xml.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g)]

@@ -8,10 +8,16 @@
 // `import` leaves that unset, so a bare `import` makes it try to read
 // its own test fixture off disk and crash. require() sets module.parent
 // correctly and skips that branch entirely.
+// pdfkit is loaded the same way, for the same reason: its exports map
+// also splits "import"/"require" targets, and Vercel's Node function
+// bundler has been observed resolving the "import" target for a package
+// that then gets executed through a CJS require() call, crashing with
+// "Cannot use import statement outside a module".
 import { createRequire } from 'node:module'
-import PDFDocument from 'pdfkit'
 
-const pdfParse = createRequire(import.meta.url)('pdf-parse')
+const require = createRequire(import.meta.url)
+const pdfParse = require('pdf-parse')
+const PDFDocument = require('pdfkit')
 
 export async function extractPdf(buffer) {
   let data

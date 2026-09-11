@@ -1,5 +1,13 @@
 import mammoth from 'mammoth'
-import { Document, Packer, Paragraph, HeadingLevel } from 'docx'
+// Loaded via createRequire, not a static import: docx's exports map
+// splits "import"/"require" targets, and Vercel's Node function bundler
+// has been observed resolving the "import" (ESM) target for a package
+// that then gets executed through a CJS require() call at runtime,
+// crashing with "Cannot use import statement outside a module" (seen for
+// pptxgenjs and pdfkit, which share this same dual-export shape).
+import { createRequire } from 'node:module'
+
+const { Document, Packer, Paragraph, HeadingLevel } = createRequire(import.meta.url)('docx')
 
 export async function extractDocx(buffer) {
   try {
