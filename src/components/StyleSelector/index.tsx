@@ -78,8 +78,10 @@ function Toggle({
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative h-5 w-9 rounded-full transition-colors ${
-          checked ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-border)]'
+        className={`relative h-5 w-9 rounded-full border transition-colors ${
+          checked
+            ? 'border-[var(--color-accent)] bg-[var(--color-accent)]'
+            : 'border-white/25 bg-white/10'
         }`}
       >
         <span
