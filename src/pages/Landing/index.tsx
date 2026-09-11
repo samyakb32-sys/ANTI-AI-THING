@@ -39,12 +39,15 @@ export default function Landing() {
                 >
                   Humanize Content
                 </button>
-                <a
-                  href="#how-it-works"
+                <button
+                  type="button"
+                  onClick={() =>
+                    document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  }
                   className="rounded-full border border-white/20 px-7 py-3 text-sm font-medium text-white/90 backdrop-blur-sm transition-colors hover:border-white/40 hover:bg-white/5"
                 >
                   See How It Works
-                </a>
+                </button>
               </div>
             </div>
           </div>
