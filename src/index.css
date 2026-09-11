@@ -1,0 +1,63 @@
+@import "tailwindcss";
+@import "@designcodeio/threeui/style.css";
+
+:root {
+  --color-bg: #050505;
+  --color-surface: #0c0c0d;
+  --color-surface-raised: #121214;
+  --color-border: #232326;
+  --color-text: #f2f1ee;
+  --color-text-dim: #9a9a9e;
+  --color-accent: #e0231c;
+  --color-accent-dim: #7a1410;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Onest', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+a {
+  color: inherit;
+}
+
+.font-editorial {
+  font-family: 'Onest', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+.toolbar-btn {
+  border-radius: 9999px;
+  border: 1px solid var(--color-border);
+  padding: 0.3rem 0.75rem;
+  color: var(--color-text-dim);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.toolbar-btn:hover:not(:disabled) {
+  color: var(--color-text);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.toolbar-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
