@@ -31,14 +31,6 @@ export default function Landing() {
               <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#e0231c]">
                 HumanizeAI
               </p>
-              <h1 className="font-editorial text-4xl font-normal leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
-                Make AI Content Feel Human.
-              </h1>
-              <p className="mt-6 max-w-md text-base font-light leading-relaxed text-white/70 sm:text-lg">
-                Transform AI-generated text, documents and presentations into
-                natural, readable content while preserving meaning, facts and
-                structure.
-              </p>
               <div className="mt-9 flex flex-wrap items-center gap-4">
                 <button
                   type="button"
