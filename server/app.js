@@ -6,7 +6,6 @@ import uploadRouter from './routes/upload.js'
 import processRouter from './routes/process.js'
 import humanizeRouter from './routes/humanize.js'
 import exportRouter from './routes/export.js'
-import { isUsingMockProvider } from './services/aiService.js'
 
 export const app = express()
 
@@ -15,7 +14,10 @@ app.use(express.json({ limit: '2mb' }))
 app.use('/api', rateLimiter)
 
 app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', aiProvider: isUsingMockProvider() ? 'mock' : 'anthropic' })
+  let aiProvider = 'mock'
+  if (process.env.ANTHROPIC_API_KEY) aiProvider = 'anthropic'
+  else if (process.env.OPENAI_API_KEY) aiProvider = 'openai'
+  res.json({ status: 'ok', aiProvider })
 })
 
 app.use('/api/upload', uploadRouter)

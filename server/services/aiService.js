@@ -59,6 +59,35 @@ async function anthropicProvider({ content, contentType, settings }) {
 }
 
 /**
+ * Calls OpenAI's Chat Completions API directly from the server. Same
+ * server-only-key guarantee as the Anthropic provider.
+ */
+async function openaiProvider({ content, contentType, settings }) {
+  const apiKey = process.env.OPENAI_API_KEY
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+      messages: [{ role: 'user', content: buildPrompt({ content, contentType, settings }) }],
+    }),
+  })
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '')
+    throw new Error(`OpenAI API error ${res.status}: ${detail}`)
+  }
+
+  const data = await res.json()
+  const text = data.choices?.[0]?.message?.content ?? ''
+  if (!text.trim()) throw new Error('OpenAI API returned an empty response')
+  return text
+}
+
+/**
  * PROTOTYPE FALLBACK — used only when no AI provider key is configured.
  * A conservative, rule-based smoothing pass (no external calls) so the
  * full app is exercisable end-to-end without credentials. This is clearly
@@ -82,6 +111,7 @@ function mockProvider({ content }) {
 
 function resolveProvider() {
   if (process.env.ANTHROPIC_API_KEY) return anthropicProvider
+  if (process.env.OPENAI_API_KEY) return openaiProvider
   return mockProvider
 }
 
@@ -109,5 +139,5 @@ export async function humanizeText({ content, contentType, settings }) {
 }
 
 export function isUsingMockProvider() {
-  return !process.env.ANTHROPIC_API_KEY
+  return !process.env.ANTHROPIC_API_KEY && !process.env.OPENAI_API_KEY
 }
